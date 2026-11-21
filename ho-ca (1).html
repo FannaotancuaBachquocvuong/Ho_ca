@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hồ cá</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#052a55;font-family:"Segoe UI",Roboto,Arial,sans-serif}
+
+/* ===== BỂ CÁ TOÀN MÀN HÌNH ===== */
+.tank{--cy:46%;position:fixed;inset:0;overflow:hidden;
+ background:linear-gradient(to bottom,#5fd0f0 0%,#1b8fd0 35%,#0a4a8a 70%,#052a55 100%)}
+
+.title{position:absolute;top:14px;left:0;right:0;text-align:center;z-index:9;color:#fff;
+ font-size:clamp(20px,3vw,32px);letter-spacing:1px;text-shadow:0 2px 8px rgba(0,0,0,.35);pointer-events:none}
+
+/* tia nắng */
+.rays{position:absolute;inset:0;pointer-events:none;
+ background:repeating-linear-gradient(105deg,rgba(255,255,255,.14) 0 40px,transparent 40px 130px);
+ -webkit-mask-image:linear-gradient(to bottom,#000,transparent 75%);mask-image:linear-gradient(to bottom,#000,transparent 75%);
+ animation:rays 12s ease-in-out infinite alternate}
+@keyframes rays{from{transform:translateX(-30px);opacity:.6}to{transform:translateX(30px);opacity:1}}
+
+/* nền cát + đá + rong biển */
+.sand{position:absolute;left:0;right:0;bottom:0;height:12%;background:linear-gradient(#e9cf8f,#c9a85e);
+ border-radius:50% 50% 0 0/30% 30% 0 0;z-index:8}
+.rock{position:absolute;bottom:8%;background:#6f7b86;border-radius:50% 50% 40% 40%;z-index:8;box-shadow:inset -6px -6px 0 rgba(0,0,0,.18)}
+.r1{left:18%;width:9vmin;height:5vmin}.r2{left:21%;width:5vmin;height:3vmin;background:#85919b}.r3{left:76%;width:12vmin;height:6vmin}
+.weed{position:absolute;bottom:9%;width:14px;height:22%;z-index:4;transform-origin:bottom center;
+ background:linear-gradient(#2fbf5b,#157a3a);border-radius:14px 14px 0 0;animation:sway 4s ease-in-out infinite alternate}
+.weed::before,.weed::after{content:"";position:absolute;bottom:0;width:12px;height:70%;background:inherit;border-radius:12px 12px 0 0}
+.weed::before{left:-14px;transform:rotate(-14deg);transform-origin:bottom}
+.weed::after{left:14px;transform:rotate(14deg);transform-origin:bottom}
+.w1{left:4%}.w2{left:9%;height:30%;animation-delay:-1s}.w3{left:88%;height:26%;animation-delay:-2s}.w4{left:94%;height:20%;animation-delay:-3s}
+@keyframes sway{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+
+/* ===== NÀNG TIÊN CÁ Ở GIỮA ===== */
+.mermaid{position:absolute;left:50%;top:var(--cy);width:28vmin;z-index:4;transform:translate(-50%,-50%);pointer-events:none}
+.mermaid img{display:block;width:100%;height:auto;filter:drop-shadow(0 0 16px rgba(190,240,255,.8));
+ animation:float 5s ease-in-out infinite alternate}
+@keyframes float{from{transform:translateY(-12px) rotate(-2deg)}to{transform:translateY(12px) rotate(2deg)}}
+
+/* ===== CÁC SINH VẬT BƠI VÒNG QUANH =====
+   --rx / --ry : bán kính ngang / dọc của quỹ đạo
+   --t : thời gian bơi hết 1 vòng     --d : độ lệch pha (âm)
+   --dir : 1 = ngược chiều kim đồng hồ, -1 = cùng chiều
+   --w : kích thước     --z : lớp (trước/sau nàng tiên cá) */
+.orbit{position:absolute;left:50%;top:var(--cy);width:0;height:0;z-index:var(--z,3);
+ animation:ox calc(var(--t)/2) ease-in-out infinite alternate;animation-delay:var(--d)}
+.orbit-y{width:0;height:0;
+ animation:oy calc(var(--t)/2) ease-in-out infinite alternate;
+ animation-delay:calc(var(--d) - var(--t) / 4 * var(--dir,1))}
+.body{width:var(--w);transform:translate(-50%,-50%);opacity:var(--o,1)}
+.body img{display:block;width:100%;height:auto;animation:face var(--t) steps(1,end) infinite;animation-delay:var(--d)}
+.rev .body img{animation-name:faceRev}      /* ảnh gốc quay mặt sang trái */
+@keyframes ox{from{transform:translateX(calc(var(--rx) * -1))}to{transform:translateX(var(--rx))}}
+@keyframes oy{from{transform:translateY(calc(var(--ry) * -1))}to{transform:translateY(var(--ry))}}
+@keyframes face{0%{transform:scaleX(1)}50%{transform:scaleX(-1)}}
+@keyframes faceRev{0%{transform:scaleX(-1)}50%{transform:scaleX(1)}}
+
+/* bong bóng */
+.bubble{position:absolute;bottom:-20px;border-radius:50%;z-index:7;border:1px solid rgba(255,255,255,.7);
+ background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.8),rgba(255,255,255,.1));animation:rise linear infinite}
+@keyframes rise{to{transform:translateY(-120vh);opacity:.2}}
+
+@media (prefers-reduced-motion:reduce){.orbit,.orbit-y,.body img,.mermaid img,.rays,.weed,.bubble{animation:none}}
+</style>
+</head>
+<body>
+<div class="tank" id="tank">
+  <div class="rays"></div>
+  <div class="title">🐠 Hồ cá 🐢</div>
+
+  <!-- đàn cá mờ phía xa -->
+  <div class="orbit" style="--rx:40vw;--ry:34vh;--t:46s;--d:0s;--dir:-1;--z:1">
+    <div class="orbit-y"><div class="body" style="--w:26vmin;--o:.4"><img src="faintSchool.png" alt="Đàn cá xa"></div></div></div>
+  <div class="orbit" style="--rx:34vw;--ry:28vh;--t:38s;--d:-17s;--dir:1;--z:1">
+    <div class="orbit-y"><div class="body" style="--w:20vmin;--o:.3"><img src="faintSchool.png" alt="Đàn cá xa"></div></div></div>
+
+  <!-- cá mập -->
+  <div class="orbit" style="--rx:36vw;--ry:30vh;--t:24s;--d:0s;--dir:1;--z:6">
+    <div class="orbit-y"><div class="body" style="--w:22vmin"><img src="shark.png" alt="Cá mập"></div></div></div>
+
+  <!-- đàn cá vàng -->
+  <div class="orbit rev" style="--rx:26vw;--ry:22vh;--t:18s;--d:-5s;--dir:-1;--z:6">
+    <div class="orbit-y"><div class="body" style="--w:14vmin"><img src="goldFishSchool.png" alt="Đàn cá vàng"></div></div></div>
+  <div class="orbit rev" style="--rx:32vw;--ry:15vh;--t:28s;--d:-14s;--dir:1;--z:3">
+    <div class="orbit-y"><div class="body" style="--w:11vmin"><img src="goldFishSchool.png" alt="Đàn cá vàng"></div></div></div>
+
+  <!-- rùa biển -->
+  <div class="orbit rev" style="--rx:22vw;--ry:24vh;--t:30s;--d:-9s;--dir:-1;--z:3">
+    <div class="orbit-y"><div class="body" style="--w:15vmin"><img src="turtle.png" alt="Rùa biển"></div></div></div>
+
+  <!-- 3 thợ lặn -->
+  <div class="orbit" style="--rx:30vw;--ry:26vh;--t:26s;--d:-2s;--dir:1;--z:3">
+    <div class="orbit-y"><div class="body" style="--w:17vmin"><img src="diver1.png" alt="Thợ lặn xanh đen"></div></div></div>
+  <div class="orbit" style="--rx:24vw;--ry:19vh;--t:20s;--d:-8s;--dir:-1;--z:6">
+    <div class="orbit-y"><div class="body" style="--w:15vmin"><img src="diver2.png" alt="Thợ lặn đỏ"></div></div></div>
+  <div class="orbit" style="--rx:38vw;--ry:33vh;--t:34s;--d:-20s;--dir:1;--z:3">
+    <div class="orbit-y"><div class="body" style="--w:13vmin"><img src="diver3.png" alt="Thợ lặn xanh lá"></div></div></div>
+
+  <!-- nàng tiên cá ở giữa -->
+  <div class="mermaid"><img src="mermaid.png" alt="Nàng tiên cá"></div>
+
+  <!-- trang trí đáy bể -->
+  <div class="weed w1"></div><div class="weed w2"></div><div class="weed w3"></div><div class="weed w4"></div>
+  <div class="rock r1"></div><div class="rock r2"></div><div class="rock r3"></div>
+  <div class="sand"></div>
+</div>
+
+<script>
+  // Tạo bong bóng ngẫu nhiên
+  const tank = document.getElementById('tank');
+  for (let i = 0; i < 22; i++) {
+    const b = document.createElement('span');
+    const size = 6 + Math.random() * 16;
+    b.className = 'bubble';
+    b.style.cssText = `left:${Math.random()*100}%;width:${size}px;height:${size}px;` +
+                      `animation-duration:${6 + Math.random()*8}s;animation-delay:${-Math.random()*10}s`;
+    tank.appendChild(b);
+  }
+</script>
+</body>
+</html>
